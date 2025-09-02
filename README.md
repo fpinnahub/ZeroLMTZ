@@ -57,3 +57,26 @@ Notes:
 ## Health Check
 
 - `GET /healthz` returns model load status.
+
+## Docker
+
+You can build a self-contained image that already includes the spaCy model (no runtime download needed).
+
+Build:
+- `docker build -t lemmatizer:latest .`
+
+Run:
+- `docker run --rm -p 8000:8000 lemmatizer:latest`
+
+Choose model at build or run time:
+- Build with a different base model: `docker build --build-arg SPACY_MODEL=en_core_web_md -t lemmatizer:md .`
+- Or override at runtime (model must have been downloaded at build):
+  - `docker run -e SPACY_MODEL=en_core_web_sm -p 8000:8000 lemmatizer:latest`
+
+Docker Compose:
+- `docker compose up --build`
+- Override model: `SPACY_MODEL=en_core_web_md docker compose up --build`
+
+Notes:
+- The Dockerfile downloads the spaCy model during build, so the container can run offline.
+- If you encounter build issues on non-amd64 platforms, consider enabling build tools in the Dockerfile (see commented apt-get line).

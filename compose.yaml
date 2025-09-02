@@ -1,0 +1,12 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        PYTHON_IMAGE: python:3.11-slim
+    environment:
+      - SPACY_MODEL=${SPACY_MODEL:-en_core_web_sm}
+    ports:
+      - "8009:8000"
+    restart: unless-stopped
