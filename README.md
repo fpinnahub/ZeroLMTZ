@@ -33,7 +33,21 @@ Body (JSON):
 Response (JSON):
 
 ```
-{ "lemmatized": "the striped bat be hang on their foot for good" }
+{
+  "lemmatized": "the striped bat be hang on their foot for good",
+  "tokens": [
+    {"text":"The","lemma":"the","pos":"DET","tag":"DT","morph":"Definite=Def|PronType=Art"},
+    {"text":"striped","lemma":"striped","pos":"ADJ","tag":"JJ","morph":"Degree=Pos"},
+    {"text":"bats","lemma":"bat","pos":"NOUN","tag":"NNS","morph":"Number=Plur"},
+    {"text":"are","lemma":"be","pos":"AUX","tag":"VBP","morph":"Mood=Ind|Tense=Pres|VerbForm=Fin"},
+    {"text":"hanging","lemma":"hang","pos":"VERB","tag":"VBG","morph":"Tense=Pres|VerbForm=Part"},
+    {"text":"on","lemma":"on","pos":"ADP","tag":"IN","morph":""},
+    {"text":"their","lemma":"they","pos":"PRON","tag":"PRP$","morph":"Case=Gen|Number=Plur|Person=3|Poss=Yes|PronType=Prs"},
+    {"text":"feet","lemma":"foot","pos":"NOUN","tag":"NNS","morph":"Number=Plur"},
+    {"text":"for","lemma":"for","pos":"ADP","tag":"IN","morph":""},
+    {"text":"best","lemma":"good","pos":"ADJ","tag":"JJS","morph":"Degree=Sup"}
+  ]
+}
 ```
 
 Notes:

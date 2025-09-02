@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 import os
 from contextlib import asynccontextmanager
 
@@ -19,8 +19,17 @@ class LemmatizeIn(BaseModel):
     text: str = Field(..., description="Input text to lemmatize")
 
 
+class TokenOut(BaseModel):
+    text: str = Field(..., description="Original token text")
+    lemma: str = Field(..., description="Lemmatized form of the token")
+    pos: str = Field(..., description="Universal POS tag (coarse)")
+    tag: str = Field(..., description="Detailed POS tag (Penn Treebank or model-specific)")
+    morph: Optional[str] = Field(None, description="Morphological features, if available")
+
+
 class LemmatizeOut(BaseModel):
     lemmatized: str = Field(..., description="Lemmatized text")
+    tokens: List[TokenOut] = Field(..., description="Token-level POS details")
 
 
 app = FastAPI(title="Lemmatizer API", version="1.0.0")
@@ -74,12 +83,13 @@ def lemmatize(payload: LemmatizeIn):
     doc = _nlp(payload.text)
 
     # Build the lemmatized text while preserving original whitespace.
-    parts = []
+    parts: List[str] = []
+    tokens_out: List[TokenOut] = []
     for token in doc:
+        # Compute normalized lemma similar to previous behavior
         if token.is_alpha:
             lemma = token.lemma_
-            # Handle older models that produce '-PRON-' for pronouns
-            if lemma.lower() == "-pron-":
+            if lemma.lower() == "-pron-":  # older models
                 lemma = token.lower_
             else:
                 lemma = lemma.lower()
@@ -87,8 +97,23 @@ def lemmatize(payload: LemmatizeIn):
         else:
             parts.append(token.text_with_ws)
 
+        # Detailed token info
+        lemma_for_token = token.lemma_
+        if lemma_for_token.lower() == "-pron-":
+            lemma_for_token = token.lower_
+
+        tokens_out.append(
+            TokenOut(
+                text=token.text,
+                lemma=lemma_for_token,
+                pos=token.pos_,
+                tag=token.tag_,
+                morph=str(token.morph) if token.morph else None,
+            )
+        )
+
     result = "".join(parts).strip()
-    return LemmatizeOut(lemmatized=result)
+    return LemmatizeOut(lemmatized=result, tokens=tokens_out)
 
 
 if __name__ == "__main__":  # pragma: no cover
